@@ -152,14 +152,14 @@ class LocalTimezoneSensor(SensorEntity):
                 _write_timezone_file, self.hass.config.config_dir, tz_name
             )
 
-        # Auto-update HASS core timezone when it changes
+        # Auto-update HASS core timezone on change or if mismatched on startup
         if (
             self._set_ha_tz
             and self.entity_description.key == "timezone"
-            and tz_name != old_tz
-            and old_tz is not None  # Skip initial load
         ):
-            await self._async_set_ha_timezone(tz_name)
+            ha_tz = self.hass.config.time_zone
+            if tz_name != old_tz or tz_name != ha_tz:
+                await self._async_set_ha_timezone(tz_name)
 
     async def _async_set_ha_timezone(self, tz_name: str) -> None:
         """Update Home Assistant's core timezone configuration."""
