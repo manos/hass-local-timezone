@@ -1,0 +1,21 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Local Timezone",
+        "description": "Select the sensor entities that provide GPS latitude and longitude. The timezone will be calculated locally — no external API calls.",
+        "data": {
+          "latitude_entity": "Latitude sensor",
+          "longitude_entity": "Longitude sensor"
+        }
+      }
+    },
+    "error": {
+      "entity_not_found": "Entity not found",
+      "invalid_value": "Entity does not have a valid numeric value"
+    },
+    "abort": {
+      "already_configured": "This GPS source is already configured"
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "domain": "local_timezone",
+  "name": "Local Timezone",
+  "codeowners": ["@manos"],
+  "config_flow": true,
+  "dependencies": [],
+  "documentation": "https://github.com/manos/hass-local-timezone",
+  "integration_type": "service",
+  "iot_class": "calculated",
+  "issue_tracker": "https://github.com/manos/hass-local-timezone/issues",
+  "requirements": ["timezonefinder==6.5.0"],
+  "version": "1.0.0"
+}
