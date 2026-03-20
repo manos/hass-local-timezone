@@ -44,22 +44,21 @@ The integration will create four sensors that automatically update when your GPS
 
 ## Use Cases
 
-### Automatic System Timezone Updates
+### Automatic HASS Timezone Updates
 
-Use with a shell command to keep your host system timezone in sync:
+When "Automatically update Home Assistant timezone" is enabled (default), the integration updates HASS's core timezone config whenever you cross a timezone boundary. This keeps `sun.sun`, automations, and all timestamps correct — no extra setup needed.
 
-```yaml
-shell_command:
-  update_timezone: "timedatectl set-timezone {{ states('sensor.local_timezone') }}"
+### Host OS Timezone Sync (Docker/HAOS)
 
-automation:
-  - alias: "Update system timezone"
-    trigger:
-      - platform: state
-        entity_id: sensor.local_timezone
-    action:
-      - service: shell_command.update_timezone
+The integration writes the current timezone to `/config/.local_timezone`. A setup script installs a lightweight systemd timer on the host that reads this file and keeps the host OS timezone in sync:
+
+```bash
+sudo bash scripts/install-host-sync.sh
 ```
+
+The script auto-detects your HASS config directory (via Docker inspect or common paths) and prompts you if it can't find it. The timer checks every 15 minutes and only updates when the timezone actually changes.
+
+For remote machines (e.g., a cloud server on your VPN), point the script at the file over a network mount or add a cron job that reads the timezone via the HASS API.
 
 ### Dashboard Display
 

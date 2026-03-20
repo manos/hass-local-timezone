@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 import logging
+from pathlib import Path
 
 from tzfpy import get_tz
 
@@ -145,6 +146,12 @@ class LocalTimezoneSensor(SensorEntity):
         self._update_state()
         self.async_write_ha_state()
 
+        # Write timezone to file for host-side consumption
+        if self.entity_description.key == "timezone":
+            await self.hass.async_add_executor_job(
+                _write_timezone_file, self.hass.config.config_dir, tz_name
+            )
+
         # Auto-update HASS core timezone when it changes
         if (
             self._set_ha_tz
@@ -204,6 +211,15 @@ class LocalTimezoneSensor(SensorEntity):
             self._attr_native_value = (
                 "on" if (dst is not None and dst.total_seconds() > 0) else "off"
             )
+
+
+def _write_timezone_file(config_dir: str, tz_name: str) -> None:
+    """Write current timezone to a file for host-side scripts."""
+    try:
+        tz_file = Path(config_dir) / ".local_timezone"
+        tz_file.write_text(tz_name + "\n")
+    except OSError:
+        _LOGGER.warning("Could not write timezone file to %s", config_dir)
 
 
 def _lookup_timezone(lat: float, lon: float) -> str | None:
