@@ -5,7 +5,7 @@ from __future__ import annotations
 from datetime import datetime, timezone
 import logging
 
-from timezonefinder import TimezoneFinder
+from tzfpy import get_tz
 
 from homeassistant.components.sensor import (
     SensorEntity,
@@ -20,17 +20,6 @@ from homeassistant.helpers.event import async_track_state_change_event
 from .const import CONF_LATITUDE_ENTITY, CONF_LONGITUDE_ENTITY, DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
-
-# Initialize TimezoneFinder once (it loads ~40MB of polygon data)
-_TZ_FINDER: TimezoneFinder | None = None
-
-
-def _get_timezone_finder() -> TimezoneFinder:
-    """Get or create the TimezoneFinder instance."""
-    global _TZ_FINDER  # noqa: PLW0603
-    if _TZ_FINDER is None:
-        _TZ_FINDER = TimezoneFinder()
-    return _TZ_FINDER
 
 
 SENSOR_DESCRIPTIONS = [
@@ -65,9 +54,6 @@ async def async_setup_entry(
     """Set up Local Timezone sensors from a config entry."""
     lat_entity = entry.data[CONF_LATITUDE_ENTITY]
     lon_entity = entry.data[CONF_LONGITUDE_ENTITY]
-
-    # Initialize TimezoneFinder in executor (blocks on first load)
-    await hass.async_add_executor_job(_get_timezone_finder)
 
     entities = [
         LocalTimezoneSensor(entry, description, lat_entity, lon_entity)
@@ -201,5 +187,5 @@ class LocalTimezoneSensor(SensorEntity):
 
 def _lookup_timezone(lat: float, lon: float) -> str | None:
     """Look up timezone name from coordinates (runs in executor)."""
-    tf = _get_timezone_finder()
-    return tf.timezone_at(lng=lon, lat=lat)
+    result = get_tz(lon, lat)
+    return result if result else None
