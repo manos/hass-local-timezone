@@ -11,7 +11,7 @@ from homeassistant import config_entries
 from homeassistant.data_entry_flow import FlowResult
 from homeassistant.helpers import selector
 
-from .const import CONF_LATITUDE_ENTITY, CONF_LONGITUDE_ENTITY, DOMAIN
+from .const import CONF_LATITUDE_ENTITY, CONF_LONGITUDE_ENTITY, CONF_SET_HA_TIMEZONE, DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -65,6 +65,7 @@ class LocalTimezoneConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 vol.Required(CONF_LONGITUDE_ENTITY): selector.EntitySelector(
                     selector.EntitySelectorConfig(domain="sensor"),
                 ),
+                vol.Optional(CONF_SET_HA_TIMEZONE, default=True): selector.BooleanSelector(),
             }
         )
 

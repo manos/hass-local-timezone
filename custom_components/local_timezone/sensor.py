@@ -17,7 +17,7 @@ from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.event import async_track_state_change_event
 
-from .const import CONF_LATITUDE_ENTITY, CONF_LONGITUDE_ENTITY, DOMAIN
+from .const import CONF_LATITUDE_ENTITY, CONF_LONGITUDE_ENTITY, CONF_SET_HA_TIMEZONE, DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -55,8 +55,10 @@ async def async_setup_entry(
     lat_entity = entry.data[CONF_LATITUDE_ENTITY]
     lon_entity = entry.data[CONF_LONGITUDE_ENTITY]
 
+    set_ha_tz = entry.data.get(CONF_SET_HA_TIMEZONE, True)
+
     entities = [
-        LocalTimezoneSensor(entry, description, lat_entity, lon_entity)
+        LocalTimezoneSensor(entry, description, lat_entity, lon_entity, set_ha_tz)
         for description in SENSOR_DESCRIPTIONS
     ]
 
@@ -75,12 +77,14 @@ class LocalTimezoneSensor(SensorEntity):
         description: SensorEntityDescription,
         lat_entity: str,
         lon_entity: str,
+        set_ha_tz: bool = True,
     ) -> None:
         """Initialize the sensor."""
         self.entity_description = description
         self._entry = entry
         self._lat_entity = lat_entity
         self._lon_entity = lon_entity
+        self._set_ha_tz = set_ha_tz
         self._attr_unique_id = f"{entry.entry_id}_{description.key}"
         self._tz_name: str | None = None
         self._unsub: callback | None = None
@@ -136,9 +140,26 @@ class LocalTimezoneSensor(SensorEntity):
             )
             return
 
+        old_tz = self._tz_name
         self._tz_name = tz_name
         self._update_state()
         self.async_write_ha_state()
+
+        # Auto-update HASS core timezone when it changes
+        if (
+            self._set_ha_tz
+            and self.entity_description.key == "timezone"
+            and tz_name != old_tz
+            and old_tz is not None  # Skip initial load
+        ):
+            await self._async_set_ha_timezone(tz_name)
+
+    async def _async_set_ha_timezone(self, tz_name: str) -> None:
+        """Update Home Assistant's core timezone configuration."""
+        _LOGGER.info(
+            "Updating Home Assistant timezone to %s", tz_name
+        )
+        await self.hass.config.async_update(time_zone=tz_name)
 
     def _update_state(self) -> None:
         """Update sensor state based on current timezone."""
