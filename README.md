@@ -4,11 +4,11 @@
 
 A Home Assistant custom integration that determines your IANA timezone from GPS coordinates using **pure Python** — no external API calls required.
 
-Built for RVers, van lifers, and anyone whose home moves.
+Built for RVers, vanlifers, sailors, or anyone whose home moves.
 
 ## Features
 
-- **Offline timezone lookup** — uses [timezonefinder](https://github.com/jannikmi/timezonefinder) for local computation
+- **Offline timezone lookup** — uses [tzfpy](https://github.com/ringsaturn/tzf) (already bundled with Home Assistant, zero extra dependencies)
 - **Four sensors:**
   - `sensor.local_timezone` — IANA timezone string (e.g., `America/Denver`)
   - `sensor.local_timezone_abbreviation` — Current abbreviation (e.g., `MDT`, `MST`)
@@ -72,5 +72,5 @@ Show your current timezone info on a dashboard card with the timezone, abbreviat
 
 ## Credits
 
-- [timezonefinder](https://github.com/jannikmi/timezonefinder) by Jannik Michelfeit — the pure Python timezone lookup engine
+- [tzfpy](https://github.com/ringsaturn/tzf) — fast Rust-based timezone lookup, already bundled with Home Assistant
 - Inspired by [hass-geolocator](https://github.com/SmartyVan/hass-geolocator) (which uses external APIs)
