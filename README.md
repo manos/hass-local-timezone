@@ -16,7 +16,7 @@ Built for RVers, vanlifers, sailors, or anyone whose home moves.
   - `sensor.local_timezone_dst_active` — Whether DST is currently active (`on`/`off`)
 - **Automatic updates** — sensors update whenever your GPS coordinates change
 - **Config flow UI** — set up entirely from the Home Assistant UI
-- **No external dependencies** — works offline, no API keys needed
+- **No external dependencies** — uses math: works offline, no API keys needed
 
 ## Installation
 
