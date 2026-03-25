@@ -8,7 +8,7 @@ Built for RVers, vanlifers, sailors, or anyone whose home moves.
 
 ## Features
 
-- **Offline timezone lookup** — uses [tzfpy](https://github.com/ringsaturn/tzf) (already bundled with Home Assistant, zero extra dependencies)
+- **Offline timezone lookup** — uses [timezonefinder](https://github.com/jannikmi/timezonefinder) (pure Python, no Rust/build tools required)
 - **Four sensors:**
   - `sensor.local_timezone` — IANA timezone string (e.g., `America/Denver`)
   - `sensor.local_timezone_abbreviation` — Current abbreviation (e.g., `MDT`, `MST`)
@@ -16,7 +16,7 @@ Built for RVers, vanlifers, sailors, or anyone whose home moves.
   - `sensor.local_timezone_dst_active` — Whether DST is currently active (`on`/`off`)
 - **Automatic updates** — sensors update whenever your GPS coordinates change
 - **Config flow UI** — set up entirely from the Home Assistant UI
-- **No external dependencies** — uses math: works offline, no API keys needed
+- **No external build dependencies** — pure Python, works on all platforms including ARM64
 
 ## Installation
 
@@ -58,8 +58,6 @@ sudo bash scripts/install-host-sync.sh
 
 The script auto-detects your HASS config directory (via Docker inspect or common paths) and prompts you if it can't find it. The timer checks every 15 minutes and only updates when the timezone actually changes.
 
-For remote machines (e.g., a cloud server on your VPN), point the script at the file over a network mount or add a cron job that reads the timezone via the HASS API.
-
 ### Dashboard Display
 
 Show your current timezone info on a dashboard card with the timezone, abbreviation, UTC offset, and DST status.
@@ -71,5 +69,5 @@ Show your current timezone info on a dashboard card with the timezone, abbreviat
 
 ## Credits
 
-- [tzfpy](https://github.com/ringsaturn/tzf) — fast Rust-based timezone lookup, already bundled with Home Assistant
+- [timezonefinder](https://github.com/jannikmi/timezonefinder) — pure Python timezone lookup from coordinates
 - Inspired by [hass-geolocator](https://github.com/SmartyVan/hass-geolocator) (which uses external APIs)

@@ -6,7 +6,8 @@ from datetime import datetime, timezone
 import logging
 from pathlib import Path
 
-from tzfpy import get_tz
+from timezonefinder import TimezoneFinder as _TF_CLASS
+_TF = _TF_CLASS()
 
 from homeassistant.components.sensor import (
     SensorEntity,
@@ -224,5 +225,5 @@ def _write_timezone_file(config_dir: str, tz_name: str) -> None:
 
 def _lookup_timezone(lat: float, lon: float) -> str | None:
     """Look up timezone name from coordinates (runs in executor)."""
-    result = get_tz(lon, lat)
+    result = _TF.timezone_at(lng=lon, lat=lat)
     return result if result else None
